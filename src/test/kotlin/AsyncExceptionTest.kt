@@ -55,5 +55,34 @@ class AsyncExceptionTest {
         }
     }
 
+    @Test
+    fun withSupervisorJob(){
 
+        val supervisorJob = SupervisorJob()
+
+        val scope = CoroutineScope(Dispatchers.Default + supervisorJob)
+
+        val job1 = scope.launch {
+            try {
+                // Kode yang mungkin menghasilkan exception
+                throw IllegalStateException("Exception 1")
+            } catch (e: Exception) {
+                println("Exception 1 ditangani: ${e.message}")
+            }
+        }
+
+        val job2 = scope.launch {
+            try {
+                // Kode yang mungkin menghasilkan exception
+                throw IllegalArgumentException("Exception 2")
+            } catch (e: Exception) {
+                println("Exception 2 ditangani: ${e.message}")
+            }
+        }
+
+        runBlocking {
+            job1.join()
+            job2.join()
+        }
+    }
 }
